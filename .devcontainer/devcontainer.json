@@ -1,0 +1,18 @@
+{
+  "name": "ArenaIQ Dev Container",
+  "image": "mcr.microsoft.com/devcontainers/python:3",
+  
+  // Forward the local server port to make the app previewable in-browser
+  "forwardPorts": [8080],
+  
+  // Customize port behaviors
+  "portsAttributes": {
+    "8080": {
+      "label": "ArenaIQ Web App Portal",
+      "onAutoForward": "openPreview"
+    }
+  },
+  
+  // Automatically spin up the python web server when the container starts
+  "postStartCommand": "nohup python3 -m http.server 8080 > /tmp/server.log 2>&1 &"
+}
