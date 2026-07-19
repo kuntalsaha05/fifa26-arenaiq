@@ -2,6 +2,7 @@
 ### Generative AI-Enabled Stadium Operations & Fan Experience Companion
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/kuntalsaha05/fifa26-arenaiq)
+[![Live Demo](https://img.shields.io/badge/demo-live-green.svg)](https://kuntalsaha05.github.io/fifa26-arenaiq/)
 
 
 ArenaIQ is an elite, high-fidelity, and adaptive Single Page Application (SPA) designed to optimize stadium operations, handle high-density crowd logistics, and elevate the spectator experience during the **FIFA World Cup 2026**.
