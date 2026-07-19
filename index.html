@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIFA World Cup 2026 - ArenaIQ</title>
+  <meta name="description" content="Generative AI-enabled stadium operations and fan companion experience for the FIFA World Cup 2026.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="index.css">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <!-- Animated Background Glow Blobs for Glassmorphism depth -->
+  <div class="bg-glow-container" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <div class="brand-container" tabindex="0" aria-label="FIFA 26 ArenaIQ Logo">
+        <div class="brand-logo-img">
+          <img src="fifa_26_logo.png" alt="FIFA World Cup 2026 Official Logo" class="brand-logo-pic">
+        </div>
+        <div class="brand-logo">
+          <span class="logo-text">FIFA 26</span>
+          <span class="logo-subtext">ARENA<span class="highlight">IQ</span></span>
+        </div>
+      </div>
+      
+      <!-- Role Toggle -->
+      <div class="role-selector-container" role="radiogroup" aria-label="Interface Mode Selector">
+        <button id="btn-role-fan" class="role-btn active" onclick="switchRole('fan')" role="radio" aria-checked="true" aria-label="Switch to Fan Companion Mode" tabindex="0">
+          <i data-lucide="users" aria-hidden="true"></i>
+          <span>Fan Companion</span>
+        </button>
+        <button id="btn-role-ops" class="role-btn" onclick="switchRole('ops')" role="radio" aria-checked="false" aria-label="Switch to Operations commandHQ Mode" tabindex="0">
+          <i data-lucide="shield-alert" aria-hidden="true"></i>
+          <span>Operations HQ</span>
+        </button>
+      </div>
+      
+      <!-- Main Nav Items (Fan Role) -->
+      <nav id="nav-fan" class="nav-menu" role="tablist" aria-label="Fan Dashboard Channels">
+        <button id="tab-fan-dashboard" class="nav-item active" onclick="switchTab('fan-dashboard')" role="tab" aria-selected="true" aria-controls="fan-dashboard-panel" tabindex="0">
+          <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+          <span>Overview</span>
+        </button>
+        <button id="tab-fan-assistant" class="nav-item" onclick="switchTab('fan-assistant')" role="tab" aria-selected="false" aria-controls="fan-assistant-panel" tabindex="0">
+          <i data-lucide="message-square-code" aria-hidden="true"></i>
+          <span>AI Assistant</span>
+        </button>
+        <button id="tab-fan-map" class="nav-item" onclick="switchTab('fan-map')" role="tab" aria-selected="false" aria-controls="fan-map-panel" tabindex="0">
+          <i data-lucide="map" aria-hidden="true"></i>
+          <span>Stadium Map</span>
+        </button>
+        <button id="tab-fan-transit" class="nav-item" onclick="switchTab('fan-transit')" role="tab" aria-selected="false" aria-controls="fan-transit-panel" tabindex="0">
+          <i data-lucide="leaf" aria-hidden="true"></i>
+          <span>Green Transit</span>
+        </button>
+        <button id="tab-fan-accessibility" class="nav-item" onclick="switchTab('fan-accessibility')" role="tab" aria-selected="false" aria-controls="fan-accessibility-panel" tabindex="0">
+          <i data-lucide="accessibility" aria-hidden="true"></i>
+          <span>Accessibility</span>
+        </button>
+      </nav>
+      
+      <!-- Main Nav Items (Ops Role) -->
+      <nav id="nav-ops" class="nav-menu hidden" role="tablist" aria-label="Operations HQ Channels">
+        <button id="tab-ops-dashboard" class="nav-item active" onclick="switchTab('ops-dashboard')" role="tab" aria-selected="true" aria-controls="ops-dashboard-panel" tabindex="0">
+          <i data-lucide="activity" aria-hidden="true"></i>
+          <span>Ops Dashboard</span>
+        </button>
+        <button id="tab-ops-dispatcher" class="nav-item" onclick="switchTab('ops-dispatcher')" role="tab" aria-selected="false" aria-controls="ops-dispatcher-panel" tabindex="0">
+          <i data-lucide="send" aria-hidden="true"></i>
+          <span>AI Dispatcher</span>
+        </button>
+        <button id="tab-ops-analytics" class="nav-item" onclick="switchTab('ops-analytics')" role="tab" aria-selected="false" aria-controls="ops-analytics-panel" tabindex="0">
+          <i data-lucide="bar-chart-3" aria-hidden="true"></i>
+          <span>Crowd Analytics</span>
+        </button>
+      </nav>
+      
+      <!-- Bottom Section / Language Selector -->
+      <div class="sidebar-footer">
+        <div class="lang-selector-container">
+          <i data-lucide="languages" class="lang-icon" aria-hidden="true"></i>
+          <label for="lang-select" class="visually-hidden">Select Interface Language</label>
+          <select id="lang-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="pt">Português</option>
+            <option value="ar">العربية</option>
+          </select>
+        </div>
+        <div class="stadium-badge" tabindex="0" aria-label="Match Venue: MetLife Stadium, New Jersey">
+          <i data-lucide="map-pin" aria-hidden="true"></i>
+          <span>MetLife Stadium, NJ</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content" role="main" id="main-content-area">
+      <!-- Top header bar -->
+      <header class="top-header">
+        <div class="header-left">
+          <h1 id="page-title">Fan Companion</h1>
+          <span class="live-indicator" tabindex="0" aria-label="Match Status: Live Matchday">
+            <span class="pulse-dot"></span>
+            <span id="live-time-label">LIVE MATCHDAY</span>
+          </span>
+        </div>
+        
+        <!-- Alerts Bar -->
+        <div id="ai-alert-banner" class="alert-banner hidden" role="alert" aria-live="assertive">
+          <div class="alert-content">
+            <i data-lucide="alert-triangle" class="alert-icon-main" aria-hidden="true"></i>
+            <div class="alert-text">
+              <strong id="alert-title">AI System Advisory:</strong>
+              <span id="alert-desc">Normal stadium operations. No active advisories.</span>
+            </div>
+          </div>
+          <button class="alert-close" onclick="closeAlertBanner()" aria-label="Close Alert Banner"><i data-lucide="x"></i></button>
+        </div>
+
+        <div class="header-right">
+          <div id="eco-badge-container" class="eco-badge tooltip" tabindex="0" aria-label="0 Eco Points earned">
+            <i data-lucide="leaf" class="green-leaf" aria-hidden="true"></i>
+            <span id="eco-points-label">0 Eco Points</span>
+            <span class="tooltip-text">Earn points by traveling sustainably!</span>
+          </div>
+          <div class="match-badge" tabindex="0" aria-label="Match Final: Argentina vs France, Kickoff in 1 hour 42 minutes">
+            <span class="team">ARG</span>
+            <span class="vs">VS</span>
+            <span class="team">FRA</span>
+            <span class="match-time" id="countdown-timer">KICKOFF 19:30</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- PANELS (FAN PORTAL) -->
+      
+      <!-- Tab 1: Fan Dashboard -->
+      <section id="fan-dashboard" class="tab-panel active" role="tabpanel" id="fan-dashboard-panel" aria-labelledby="tab-fan-dashboard">
+        <div class="grid-layout">
+          <!-- Hero Match Card -->
+          <div class="card glass-card span-8 match-hero" tabindex="0" aria-label="Argentina vs France Final at MetLife Stadium">
+            <div class="hero-bg-overlay"></div>
+            <div class="hero-content">
+              <span class="match-status" id="hero-match-status">WORLD CUP FINAL • CHAMPIONSHIP MATCH</span>
+              <h2>Argentina vs France</h2>
+              <p id="hero-stadium-desc">MetLife Stadium • East Rutherford, New Jersey</p>
+              <div class="hero-stats">
+                <div class="stat-pill"><i data-lucide="calendar" aria-hidden="true"></i><span>July 19, 2026</span></div>
+                <div class="stat-pill"><i data-lucide="thermometer" aria-hidden="true"></i><span>78°F (Sunny)</span></div>
+                <div class="stat-pill"><i data-lucide="users" aria-hidden="true"></i><span>82,500 Expected</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Ticket Card (Perforated ticket style) -->
+          <div class="card glass-card span-4 ticket-card ticket-perforated" tabindex="0" aria-label="Your Mobile Ticket details. Section 114A, Row 14, Seat 8">
+            <div class="ticket-perforation-notch-left" aria-hidden="true"></div>
+            <div class="ticket-perforation-notch-right" aria-hidden="true"></div>
+            <h3 id="ticket-header-title">Your Mobile Ticket</h3>
+            <div class="ticket-body">
+              <div class="ticket-info">
+                <div>
+                  <span class="label" id="label-section">SECTION</span>
+                  <span class="value">114A</span>
+                </div>
+                <div>
+                  <span class="label" id="label-row">ROW</span>
+                  <span class="value">14</span>
+                </div>
+                <div>
+                  <span class="label" id="label-seat">SEAT</span>
+                  <span class="value">8</span>
+                </div>
+              </div>
+              <div class="gate-recommendation">
+                <i data-lucide="info" aria-hidden="true"></i>
+                <div>
+                  <strong id="ticket-rec-gate">Recommended Entry: Gate C</strong>
+                  <span id="ticket-rec-reason">Shortest current queues (under 5 min wait)</span>
+                </div>
+              </div>
+              <div class="ticket-qr-placeholder">
+                <div class="qr-code">
+                  <svg viewBox="0 0 100 100" class="qr-svg" aria-label="Mobile Ticket QR Code scanner graphic">
+                    <rect x="0" y="0" width="100" height="100" fill="transparent" />
+                    <rect x="10" y="10" width="25" height="25" fill="none" stroke="currentColor" stroke-width="6" />
+                    <rect x="15" y="15" width="15" height="15" fill="currentColor" />
+                    <rect x="65" y="10" width="25" height="25" fill="none" stroke="currentColor" stroke-width="6" />
+                    <rect x="70" y="15" width="15" height="15" fill="currentColor" />
+                    <rect x="10" y="65" width="25" height="25" fill="none" stroke="currentColor" stroke-width="6" />
+                    <rect x="15" y="70" width="15" height="15" fill="currentColor" />
+                    <rect x="45" y="15" width="8" height="8" fill="currentColor" />
+                    <rect x="40" y="30" width="16" height="8" fill="currentColor" />
+                    <rect x="65" y="45" width="8" height="12" fill="currentColor" />
+                    <rect x="80" y="65" width="8" height="8" fill="currentColor" />
+                    <rect x="45" y="65" width="12" height="16" fill="currentColor" />
+                    <rect x="70" y="80" width="12" height="8" fill="currentColor" />
+                  </svg>
+                </div>
+                <span id="ticket-scan-label">Scan for fast-track gate entry</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Feature Cards Grid (4 columns each) -->
+          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Multilingual AI Assistant block">
+            <div class="icon-circle"><i data-lucide="message-square-code" class="accent-color" aria-hidden="true"></i></div>
+            <h3 id="card-ai-title">Multilingual AI Assistant</h3>
+            <p id="card-ai-desc">Ask our GenAI chatbot about food options, rules, transit, or security. Speaks 5+ languages.</p>
+            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-assistant')" id="btn-ai-chat" aria-label="Open AI chatbot assistant">Chat Now</button>
+          </div>
+
+          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Interactive Stadium Map block">
+            <div class="icon-circle"><i data-lucide="map" class="green-color" aria-hidden="true"></i></div>
+            <h3 id="card-map-title">Interactive Stadium Map</h3>
+            <p id="card-map-desc">See live queue times for restrooms and food. Navigate directly to Section 114A.</p>
+            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-map')" id="btn-map-open" aria-label="Open Stadium navigation map">Open Map</button>
+          </div>
+
+          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Eco-Friendly Transit block">
+            <div class="icon-circle"><i data-lucide="leaf" class="gold-color" aria-hidden="true"></i></div>
+            <h3 id="card-transit-title">Eco-Friendly Transit</h3>
+            <p id="card-transit-desc">Plan carbon-neutral transportation, log your ride, and earn exclusive World Cup digital tokens.</p>
+            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-transit')" id="btn-transit-plan" aria-label="Open green transit planner">Plan Route</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 2: Fan AI Assistant -->
+      <section id="fan-assistant" class="tab-panel" role="tabpanel" id="fan-assistant-panel" aria-labelledby="tab-fan-assistant">
+        <div class="chat-layout">
+          <!-- Chat sidebar / prompts -->
+          <div class="chat-prompts-sidebar glass-card">
+            <h3 id="suggested-questions-title">Suggested Questions</h3>
+            <div class="prompts-list" id="prompts-list-container">
+              <button class="prompt-chip" onclick="sendSuggestedPrompt('What is the fastest way to get to MetLife Stadium by train?')" aria-label="Ask assistant: What is the fastest way to get to MetLife Stadium by train?">
+                <i data-lucide="train" aria-hidden="true"></i>
+                <span id="prompt-1">Getting here by train</span>
+              </button>
+              <button class="prompt-chip" onclick="sendSuggestedPrompt('Where are the nearest vegan food stands to Section 114?')" aria-label="Ask assistant: Where are the nearest vegan food stands to Section 114?">
+                <i data-lucide="utensils" aria-hidden="true"></i>
+                <span id="prompt-2">Vegan food near Sec 114</span>
+              </button>
+              <button class="prompt-chip" onclick="sendSuggestedPrompt('How long are the restroom lines right now?')" aria-label="Ask assistant: How long are the restroom lines right now?">
+                <i data-lucide="hourglass" aria-hidden="true"></i>
+                <span id="prompt-3">Restroom queue times</span>
+              </button>
+              <button class="prompt-chip" onclick="sendSuggestedPrompt('Where is the closest sensory room for sensory-sensitive fans?')" aria-label="Ask assistant: Where is the closest sensory room for sensory-sensitive fans?">
+                <i data-lucide="heart" aria-hidden="true"></i>
+                <span id="prompt-4">Sensory rooms</span>
+              </button>
+              <button class="prompt-chip" onclick="sendSuggestedPrompt('What items are prohibited inside the stadium?')" aria-label="Ask assistant: What items are prohibited inside the stadium?">
+                <i data-lucide="ban" aria-hidden="true"></i>
+                <span id="prompt-5">Prohibited items</span>
+              </button>
+            </div>
+            
+            <div class="ai-disclaimer">
+              <i data-lucide="sparkles" aria-hidden="true"></i>
+              <span id="ai-disclaimer-text">FIFA ArenaIQ uses Generative AI to provide real-time multilingual operational support.</span>
+            </div>
+          </div>
+
+          <!-- Chat window -->
+          <div class="chat-window-container glass-card">
+            <div class="chat-header">
+              <div class="chat-status-active">
+                <i data-lucide="bot" aria-hidden="true"></i>
+                <div>
+                  <h4 id="assistant-name">ArenaIQ Assistant</h4>
+                  <span>Online • GenAI Support Agent</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages-box" role="log" aria-label="Chat messages log">
+              <div class="message bot-message">
+                <div class="message-bubble">
+                  <p id="chat-welcome-msg">Hello! I am your AI assistant for the FIFA World Cup 2026 at MetLife Stadium. You can ask me anything about stadium gates, food, transport, sustainability, accessibility, or rules in your preferred language. How can I help you today?</p>
+                </div>
+                <span class="message-time" id="welcome-message-time">19:00</span>
+              </div>
+            </div>
+
+            <!-- Chat input -->
+            <div class="chat-input-bar">
+              <label for="chat-input-field" class="visually-hidden">Ask the AI Assistant</label>
+              <input type="text" id="chat-input-field" placeholder="Type your question here..." onkeypress="handleChatKeyPress(event)">
+              <button class="btn-chat-mic" onclick="simulateVoiceInput()" title="Voice input (simulation)" aria-label="Simulate microphone audio input">
+                <i data-lucide="mic" id="mic-icon" aria-hidden="true"></i>
+              </button>
+              <button class="btn btn-primary btn-chat-send" onclick="sendChatMessage()" aria-label="Send message">
+                <span id="btn-chat-send-text">Send</span>
+                <i data-lucide="send" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 3: Fan Map -->
+      <section id="fan-map" class="tab-panel" role="tabpanel" id="fan-map-panel" aria-labelledby="tab-fan-map">
+        <div class="map-layout">
+          <!-- Main Map Display -->
+          <div class="map-view-container glass-card">
+            <div class="map-header">
+              <h3 id="map-main-title">Interactive Stadium Map</h3>
+              <div class="map-legend" role="presentation">
+                <span class="legend-item"><span class="legend-dot green"></span><span id="legend-low">Low Wait (&lt;5 min)</span></span>
+                <span class="legend-item"><span class="legend-dot yellow"></span><span id="legend-mod">Moderate (5-15 min)</span></span>
+                <span class="legend-item"><span class="legend-dot red"></span><span id="legend-high">High (&gt;15 min)</span></span>
+              </div>
+            </div>
+            
+            <!-- SVG Map Wrapper -->
+            <div class="map-svg-wrapper" id="stadium-map-wrapper">
+              <svg viewBox="0 0 800 500" class="stadium-svg" id="stadium-svg-element" aria-label="MetLife Stadium Blueprint Layout">
+                <!-- Stadium outer outline -->
+                <ellipse cx="400" cy="250" rx="350" ry="220" class="map-stadium-outer" />
+                <ellipse cx="400" cy="250" rx="260" ry="160" class="map-stadium-inner" />
+                <!-- Pitch -->
+                <rect x="250" y="160" width="300" height="180" rx="10" class="map-pitch" />
+                <circle cx="400" cy="250" r="40" class="map-pitch-circle" />
+                <line x1="400" y1="160" x2="400" y2="340" class="map-pitch-line" />
+                
+                <!-- Zone A - Top Left (Concourse 1) -->
+                <path d="M 120 180 A 300 180 0 0 1 250 60 L 300 120 A 180 100 0 0 0 200 200 Z" class="map-zone clickable-zone" id="zone-A" onclick="selectMapZone('Zone A (North Concourse)')" tabindex="0" role="button" aria-label="Zone A, North Concourse. Wait time: Low" onkeydown="handleMapKeyDown(event, 'zone', 'Zone A (North Concourse)')" />
+                <text x="210" y="120" class="map-label">Zone A</text>
+                
+                <!-- Zone B - Top Right (East Concourse) -->
+                <path d="M 550 60 A 300 180 0 0 1 680 180 L 600 200 A 180 100 0 0 0 500 120 Z" class="map-zone clickable-zone" id="zone-B" onclick="selectMapZone('Zone B (East Concourse)')" tabindex="0" role="button" aria-label="Zone B, East Concourse. Wait time: High wait" onkeydown="handleMapKeyDown(event, 'zone', 'Zone B (East Concourse)')" />
+                <text x="590" y="120" class="map-label">Zone B</text>
+                
+                <!-- Zone C - Bottom Right (South Concourse) -->
+                <path d="M 680 320 A 300 180 0 0 1 550 440 L 500 380 A 180 100 0 0 0 600 300 Z" class="map-zone clickable-zone" id="zone-C" onclick="selectMapZone('Zone C (South Concourse)')" tabindex="0" role="button" aria-label="Zone C, South Concourse. Wait time: Low" onkeydown="handleMapKeyDown(event, 'zone', 'Zone C (South Concourse)')" />
+                <text x="590" y="380" class="map-label">Zone C</text>
+                
+                <!-- Zone D - Bottom Left (West Concourse) -->
+                <path d="M 250 440 A 300 180 0 0 1 120 320 L 200 300 A 180 100 0 0 0 300 380 Z" class="map-zone clickable-zone" id="zone-D" onclick="selectMapZone('Zone D (West Concourse)')" tabindex="0" role="button" aria-label="Zone D, West Concourse. Wait time: Low" onkeydown="handleMapKeyDown(event, 'zone', 'Zone D (West Concourse)')" />
+                <text x="210" y="380" class="map-label">Zone D</text>
+                
+                <!-- Gates indicators -->
+                <circle cx="80" cy="250" r="12" class="map-gate" id="gate-A" onclick="selectMapGate('Gate A')" tabindex="0" role="button" aria-label="Gate A Entry" onkeydown="handleMapKeyDown(event, 'gate', 'Gate A')" />
+                <text x="80" y="254" class="map-gate-label">A</text>
+                
+                <circle cx="400" cy="45" r="12" class="map-gate" id="gate-B" onclick="selectMapGate('Gate B')" tabindex="0" role="button" aria-label="Gate B Entry" onkeydown="handleMapKeyDown(event, 'gate', 'Gate B')" />
+                <text x="400" y="49" class="map-gate-label">B</text>
+                
+                <circle cx="720" cy="250" r="12" class="map-gate" id="gate-C" onclick="selectMapGate('Gate C')" tabindex="0" role="button" aria-label="Gate C Entry" onkeydown="handleMapKeyDown(event, 'gate', 'Gate C')" />
+                <text x="720" y="254" class="map-gate-label">C</text>
+                
+                <circle cx="400" cy="455" r="12" class="map-gate" id="gate-D" onclick="selectMapGate('Gate D')" tabindex="0" role="button" aria-label="Gate D Entry" onkeydown="handleMapKeyDown(event, 'gate', 'Gate D')" />
+                <text x="400" y="459" class="map-gate-label">D</text>
+
+                <!-- Restrooms & Food Icons Mapped visually -->
+                <!-- Restroom Zone A -->
+                <g class="map-icon" id="icon-restroom-A" onclick="selectMapItem('Restroom A', 'Zone A', 'moderate')" tabindex="0" role="button" aria-label="Restroom stall in Zone A" onkeydown="handleMapKeyDown(event, 'item', 'Restroom A', 'Zone A', 'moderate')">
+                  <rect x="230" y="80" width="16" height="16" rx="4" fill="#3b82f6" />
+                  <path d="M 235 92 L 235 88 A 2 2 0 0 1 241 88 L 241 92 Z" fill="#ffffff" />
+                </g>
+                <!-- Concession Zone B -->
+                <g class="map-icon" id="icon-food-B" onclick="selectMapItem('Concessions East', 'Zone B', 'high')" tabindex="0" role="button" aria-label="Concession stands in Zone B" onkeydown="handleMapKeyDown(event, 'item', 'Concessions East', 'Zone B', 'high')">
+                  <rect x="560" y="140" width="16" height="16" rx="4" fill="#10b981" />
+                  <path d="M 563 151 L 563 148 L 573 148 L 573 151 Z" fill="#ffffff" />
+                </g>
+                <!-- Restroom Zone C -->
+                <g class="map-icon" id="icon-restroom-C" onclick="selectMapItem('Restroom C', 'Zone C', 'low')" tabindex="0" role="button" aria-label="Restroom stall in Zone C" onkeydown="handleMapKeyDown(event, 'item', 'Restroom C', 'Zone C', 'low')">
+                  <rect x="540" y="380" width="16" height="16" rx="4" fill="#3b82f6" />
+                  <path d="M 545 392 L 545 388 A 2 2 0 0 1 551 388 L 551 392 Z" fill="#ffffff" />
+                </g>
+                <!-- Concession Zone D -->
+                <g class="map-icon" id="icon-food-D" onclick="selectMapItem('Concessions West', 'Zone D', 'low')" tabindex="0" role="button" aria-label="Concession stands in Zone D" onkeydown="handleMapKeyDown(event, 'item', 'Concessions West', 'Zone D', 'low')">
+                  <rect x="210" y="320" width="16" height="16" rx="4" fill="#10b981" />
+                  <path d="M 213 331 L 213 328 L 223 328 L 223 331 Z" fill="#ffffff" />
+                </g>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Map Control Details Pane -->
+          <div class="map-details-sidebar glass-card" role="complementary" aria-label="Selected Destination Navigation Details">
+            <h3 id="map-target-title">Select Area on Map</h3>
+            <div id="map-target-details" class="map-details-body">
+              <p class="neutral-text" id="map-landing-desc">Click on any gate, zone, restroom, or concession stand in the interactive map to view live capacity metrics, queue lengths, accessibility options, and direct navigation paths.</p>
+              
+              <!-- Quick navigation suggestion -->
+              <div class="nav-suggestions-box">
+                <h4 id="suggested-dest-title">Suggested Destinations:</h4>
+                <button class="nav-suggest-btn" onclick="selectMapGate('Gate C')" tabindex="0" aria-label="Navigate to Section 114A via Gate C">
+                  <i data-lucide="navigation" aria-hidden="true"></i>
+                  <span id="nav-suggest-1">Navigate to Section 114A via Gate C</span>
+                </button>
+                <button class="nav-suggest-btn" onclick="selectMapItem('Restroom A', 'Zone A', 'moderate')" tabindex="0" aria-label="Find nearest restrooms in Zone A">
+                  <i data-lucide="navigation" aria-hidden="true"></i>
+                  <span id="nav-suggest-2">Find nearest restrooms (Zone A)</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 4: Fan Green Transit -->
+      <section id="fan-transit" class="tab-panel" role="tabpanel" id="fan-transit-panel" aria-labelledby="tab-fan-transit">
+        <div class="grid-layout">
+          <!-- Left side: transit planner -->
+          <div class="card glass-card span-7">
+            <h3 id="transit-planner-title">Eco-Friendly Transit Planner</h3>
+            <p id="transit-planner-desc">Select your starting area/shuttle node to compute route options and carbon offset achievements.</p>
+            
+            <div class="transit-form">
+              <div class="form-group">
+                <label for="transit-origin" id="label-origin">Departing From:</label>
+                <select id="transit-origin" class="form-control" tabindex="0">
+                  <option value="nyc" id="opt-nyc">New York Penn Station (Manhattan)</option>
+                  <option value="secaucus" id="opt-sec">Secaucus Junction (NJ Transit)</option>
+                  <option value="newark" id="opt-nwk">Newark Liberty International Airport</option>
+                  <option value="parking" id="opt-prk">Stadium Park & Ride Lot E</option>
+                </select>
+              </div>
+
+              <div class="transit-options-list" role="radiogroup" aria-label="Transit Mode Options">
+                <!-- Train Option -->
+                <div class="transit-option-card active" id="mode-train" onclick="selectTransitMode('train')" tabindex="0" role="radio" aria-checked="true" aria-label="NJ Transit Express Train, earns 40 eco points. Duration 22 mins." onkeydown="handleTransitKeyDown(event, 'train')">
+                  <div class="option-header">
+                    <div class="option-type">
+                      <i data-lucide="train" class="blue-color" aria-hidden="true"></i>
+                      <strong id="mode-train-title">NJ Transit Express Train</strong>
+                    </div>
+                    <span class="carbon-save-badge green" id="points-train">+40 Eco Points</span>
+                  </div>
+                  <div class="option-details">
+                    <span><span id="lbl-duration-1">Duration:</span> <strong id="val-duration-1">22 mins</strong></span>
+                    <span>CO₂ <span id="lbl-impact-1">Impact:</span> <strong id="val-impact-1">1.2 kg</strong> (<span id="lbl-save-1">85% savings</span>)</span>
+                  </div>
+                </div>
+
+                <!-- Bus Shuttle Option -->
+                <div class="transit-option-card" id="mode-shuttle" onclick="selectTransitMode('shuttle')" tabindex="0" role="radio" aria-checked="false" aria-label="MetLife Park-and-Ride Shuttle, earns 20 eco points. Duration 35 mins." onkeydown="handleTransitKeyDown(event, 'shuttle')">
+                  <div class="option-header">
+                    <div class="option-type">
+                      <i data-lucide="bus" class="accent-color" aria-hidden="true"></i>
+                      <strong id="mode-shuttle-title">MetLife Park-and-Ride Shuttle</strong>
+                    </div>
+                    <span class="carbon-save-badge green" id="points-shuttle">+20 Eco Points</span>
+                  </div>
+                  <div class="option-details">
+                    <span><span id="lbl-duration-2">Duration:</span> <strong id="val-duration-2">35 mins</strong></span>
+                    <span>CO₂ <span id="lbl-impact-2">Impact:</span> <strong id="val-impact-2">2.8 kg</strong> (<span id="lbl-save-2">65% savings</span>)</span>
+                  </div>
+                </div>
+
+                <!-- Rideshare/Car Option -->
+                <div class="transit-option-card" id="mode-car" onclick="selectTransitMode('car')" tabindex="0" role="radio" aria-checked="false" aria-label="Rideshare or Personal Car, earns 0 points. Duration 48 mins." onkeydown="handleTransitKeyDown(event, 'car')">
+                  <div class="option-header">
+                    <div class="option-type">
+                      <i data-lucide="car" class="red-color" aria-hidden="true"></i>
+                      <strong id="mode-car-title">Rideshare / Personal Car</strong>
+                    </div>
+                    <span class="carbon-save-badge neutral" id="points-car">0 Eco Points</span>
+                  </div>
+                  <div class="option-details">
+                    <span><span id="lbl-duration-3">Duration:</span> <strong id="val-duration-3">48 mins</strong></span>
+                    <span>CO₂ <span id="lbl-impact-3">Impact:</span> <strong id="val-impact-3">8.4 kg</strong> (<span id="lbl-save-3">Baseline</span>)</span>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn btn-success btn-full" onclick="logSustainableChoice()" id="btn-log-ride" tabindex="0">
+                <i data-lucide="check" aria-hidden="true"></i>
+                <span id="btn-log-ride-text">Log Sustainable Ride & Claim Eco-Points</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right side: carbon status / leaderboard -->
+          <div class="card glass-card span-5 gamification-card">
+            <h3 id="sustain-dashboard-title">Sustainability Dashboard</h3>
+            
+            <div class="eco-metrics">
+              <div class="eco-metric" tabindex="0" aria-label="Global CO2 saved today is 154.2 tons">
+                <span class="eco-number" id="global-co2-saved">154.2 tn</span>
+                <span class="eco-label" id="lbl-co2-saved">Total CO₂ Saved Today</span>
+              </div>
+              <div class="eco-metric" tabindex="0" aria-label="Your Achievement Level is Green Fan Level 2">
+                <span class="eco-number" id="user-eco-level">Green Fan (Level 2)</span>
+                <span class="eco-label" id="lbl-user-level">Your Achievement Level</span>
+              </div>
+            </div>
+
+            <div class="rewards-section">
+              <h4 id="eco-rewards-title">Eco Rewards Locked:</h4>
+              <div class="reward-item locked" id="reward-1" tabindex="0" aria-label="Reward Locked: Free Soda Refill. Requires 50 Eco points.">
+                <i data-lucide="gift" class="reward-icon" aria-hidden="true"></i>
+                <div class="reward-desc">
+                  <strong id="reward-1-title">Free Soda Refill (Souvenir Cup)</strong>
+                  <span><span id="lbl-reward-req-1">Requires 50 Eco Points (You need</span> <span id="reward-1-diff">50</span> <span id="lbl-reward-req-1-diff">more</span>)</span>
+                </div>
+              </div>
+              <div class="reward-item locked" id="reward-2" tabindex="0" aria-label="Reward Locked: 10% off merch. Requires 100 Eco points.">
+                <i data-lucide="ticket" class="reward-icon" aria-hidden="true"></i>
+                <div class="reward-desc">
+                  <strong id="reward-2-title">10% Off Match Day Merch</strong>
+                  <span><span id="lbl-reward-req-2">Requires 100 Eco Points (You need</span> <span id="reward-2-diff">100</span> <span id="lbl-reward-req-2-diff">more</span>)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Eco Tips -->
+            <div class="eco-tip-box" tabindex="0" aria-label="AI Eco Tip of the day">
+              <i data-lucide="sparkles" aria-hidden="true"></i>
+              <div>
+                <strong id="eco-tip-title">AI Eco-Tip of the Day:</strong>
+                <p id="eco-tip-desc">Bringing a reusable water bottle (max 500ml, clear plastic) saves on concession waste. Refill stations are located in Concourses A, B, and D.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 5: Accessibility Services -->
+      <section id="fan-accessibility" class="tab-panel" role="tabpanel" id="fan-accessibility-panel" aria-labelledby="tab-fan-accessibility">
+        <div class="grid-layout">
+          <!-- Accessibility options and forms -->
+          <div class="card glass-card span-7">
+            <h3 id="accessibility-title">Stadium Accessibility Assistance</h3>
+            <p id="accessibility-desc">FIFA 2026 is committed to making the tournament accessible to everyone. Configure your profile below to trigger automated accessibility paths on maps and coordinate staff assistance.</p>
+            
+            <div class="assistance-options">
+              <div class="assistance-grid" role="group" aria-label="Toggle accessibility features">
+                <button class="assist-toggle-card" onclick="toggleAssistFeature(this, 'wheelchair')" aria-pressed="false" tabindex="0" aria-label="Toggle Wheelchair Navigation: highlights ramps and elevators">
+                  <i data-lucide="accessibility" aria-hidden="true"></i>
+                  <strong id="acc-opt-1-title">Wheelchair Navigation</strong>
+                  <span id="acc-opt-1-desc">Highlights ramps, elevators, and wide aisles.</span>
+                </button>
+                <button class="assist-toggle-card" onclick="toggleAssistFeature(this, 'audio')" aria-pressed="false" tabindex="0" aria-label="Toggle Audio Description transmitters">
+                  <i data-lucide="headphones" aria-hidden="true"></i>
+                  <strong id="acc-opt-2-title">Audio Description</strong>
+                  <span id="acc-opt-2-desc">Request an audio transmitter for descriptive commentary.</span>
+                </button>
+                <button class="assist-toggle-card" onclick="toggleAssistFeature(this, 'sensory')" aria-pressed="false" tabindex="0" aria-label="Toggle Sensory quiet accommodations">
+                  <i data-lucide="heart" aria-hidden="true"></i>
+                  <strong id="acc-opt-3-title">Sensory Sensitivity</strong>
+                  <span id="acc-opt-3-desc">Request sensory pack (noise-cancelling headphones).</span>
+                </button>
+                <button class="assist-toggle-card" onclick="toggleAssistFeature(this, 'stroller')" aria-pressed="false" tabindex="0" aria-label="Toggle Family assistance check-ins">
+                  <i data-lucide="baby" aria-hidden="true"></i>
+                  <strong id="acc-opt-4-title">Family Assistance</strong>
+                  <span id="acc-opt-4-desc">Highlights nursing rooms and stroller check-ins.</span>
+                </button>
+              </div>
+
+              <div class="booking-form-box">
+                <h4 id="sensory-booking-title">Sensory Room Booking (MetLife Room 210)</h4>
+                <div class="form-row">
+                  <div class="form-group flex-1">
+                    <label for="sensory-time" id="lbl-sensory-time">Time Slot:</label>
+                    <select id="sensory-time" class="form-control" tabindex="0">
+                      <option value="1900" id="opt-s-1">19:00 - 19:30 (Pre-match)</option>
+                      <option value="2015" id="opt-s-2">20:15 - 20:45 (Halftime)</option>
+                      <option value="2100" id="opt-s-3">21:00 - 21:30 (Second half)</option>
+                    </select>
+                  </div>
+                  <div class="form-group flex-1">
+                    <label for="sensory-guests" id="lbl-sensory-guests">Guests:</label>
+                    <input type="number" id="sensory-guests" class="form-control" value="1" min="1" max="4" tabindex="0">
+                  </div>
+                </div>
+                <button class="btn btn-primary" onclick="bookSensoryRoom()" id="btn-sensory-book" tabindex="0">Book Sensory Room Slot</button>
+                <div id="booking-confirmation" class="booking-confirmation hidden" role="region" aria-live="polite"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: contact / assistance request -->
+          <div class="card glass-card span-5">
+            <h3 id="urgent-support-title">Request Urgent Volunteer Support</h3>
+            <p id="urgent-support-desc">Need on-site assistance? Describe your issue below. A nearby accessibility volunteer will be dispatched to your seat position.</p>
+            
+            <div class="dispatch-request-form">
+              <div class="form-group">
+                <label for="help-seat" id="lbl-help-seat">Seat / Gate Location:</label>
+                <input type="text" id="help-seat" class="form-control" placeholder="e.g. Section 114A, Row 14, Seat 8" tabindex="0">
+              </div>
+              <div class="form-group">
+                <label for="help-description" id="lbl-help-desc">Describe assistance needed:</label>
+                <textarea id="help-description" class="form-control" rows="4" placeholder="e.g. Wheelchair user requires assistance boarding the transit shuttle post-match." tabindex="0"></textarea>
+              </div>
+              
+              <button class="btn btn-warning btn-full" onclick="requestVolunteerAssistance()" id="btn-submit-help" tabindex="0">
+                <i data-lucide="users" aria-hidden="true"></i>
+                <span id="btn-submit-help-text">Submit Assistance Request</span>
+              </button>
+              
+              <div id="volunteer-request-status" class="volunteer-status-box hidden" role="region" aria-live="polite">
+                <div class="status-indicator">
+                  <span class="status-pulse-dot"></span>
+                  <strong id="vol-status-text">Dispatching Volunteer...</strong>
+                </div>
+                <p id="vol-status-desc">AI Dispatcher has assigned Volunteer Sarah (Accessibility Specialist) to Section 114A. ETA: 4 minutes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANELS (OPERATIONS PORTAL) -->
+      
+      <!-- Tab 6: Operations Dashboard -->
+      <section id="ops-dashboard" class="tab-panel" role="tabpanel" id="ops-dashboard-panel" aria-labelledby="tab-ops-dashboard">
+        <!-- Operations stats overview -->
+        <div class="ops-stats-row">
+          <div class="card glass-card ops-stat-card" tabindex="0" aria-label="Total Attendance metrics">
+            <span class="stat-label">TOTAL ATTENDANCE</span>
+            <span class="stat-value" id="ops-attendance-val">68,245</span>
+            <span class="stat-meta" id="ops-attendance-meta">82% of capacity</span>
+          </div>
+          <div class="card glass-card ops-stat-card" tabindex="0" aria-label="Active Incidents: 2 active">
+            <span class="stat-label">ACTIVE INCIDENTS</span>
+            <span class="stat-value text-red" id="ops-incidents-val">2</span>
+            <span class="stat-meta" id="ops-incidents-meta">1 high severity</span>
+          </div>
+          <div class="card glass-card ops-stat-card" tabindex="0" aria-label="Average Queue Wait: 8.5 minutes">
+            <span class="stat-label">AVG QUEUE TIME</span>
+            <span class="stat-value" id="ops-avg-queue-val">8.5 min</span>
+            <span class="stat-meta" id="ops-avg-queue-meta">Gate B is longest</span>
+          </div>
+          <div class="card glass-card ops-stat-card" tabindex="0" aria-label="Active Volunteers: 340 active">
+            <span class="stat-label">VOLUNTEERS ACTIVE</span>
+            <span class="stat-value text-green" id="ops-volunteers-val">340</span>
+            <span class="stat-meta" id="ops-volunteers-meta">45 on dispatch standby</span>
+          </div>
+        </div>
+
+        <div class="grid-layout">
+          <!-- Incident Feed & Stream -->
+          <div class="card glass-card span-7">
+            <div class="card-header-with-action">
+              <h3>Live Incident Log</h3>
+              <span class="incident-badge-count" id="incident-count-badge">2 Active</span>
+            </div>
+            <div class="incident-feed-container" id="ops-incident-feed" role="log" aria-label="Operations live incident reports feed">
+              <!-- Incident 1 -->
+              <div class="incident-card high" id="inc-001" tabindex="0" aria-label="High severity incident: crowd congestion at Gate B">
+                <div class="inc-header">
+                  <span class="inc-severity">HIGH</span>
+                  <span class="inc-time">19:40</span>
+                </div>
+                <h4>Crowd congestion at Gate B (East Concourse)</h4>
+                <p>Entry flow has exceeded 120 people/minute. Wait time is 18 minutes. AI predicts queue bottleneck.</p>
+                <div class="inc-actions">
+                  <button class="btn btn-sm btn-primary" onclick="resolveIncident('inc-001')" tabindex="0" aria-label="Resolve Incident: Gate B congestion">Mark Resolved</button>
+                  <button class="btn btn-sm btn-outline" onclick="dispatchDirect('Gate B congestion - Redirect incoming fans to Gate A')" tabindex="0" aria-label="Generate AI volunteer dispatch for Gate B congestion">Generate AI Dispatch</button>
+                </div>
+              </div>
+              <!-- Incident 2 -->
+              <div class="incident-card moderate" id="inc-002" tabindex="0" aria-label="Moderate severity incident: water spill concourse A">
+                <div class="inc-header">
+                  <span class="inc-severity">MODERATE</span>
+                  <span class="inc-time">19:35</span>
+                </div>
+                <h4>Water Spill - Concourse A Section 104</h4>
+                <p>Liquid spill near concession stand. Slipping hazard reported by fan.</p>
+                <div class="inc-actions">
+                  <button class="btn btn-sm btn-primary" onclick="resolveIncident('inc-002')" tabindex="0" aria-label="Resolve Incident: spill concourse A">Mark Resolved</button>
+                  <button class="btn btn-sm btn-outline" onclick="dispatchDirect('Water spill Section 104 Concourse A')" tabindex="0" aria-label="Generate AI volunteer dispatch for water spill concourse A">Generate AI Dispatch</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Simulation Panel -->
+          <div class="card glass-card span-5 simulation-card">
+            <h3>Operations Simulator</h3>
+            <p>Inject real-time matchday events to test the Generative AI predictive alerting systems and automated volunteer dispatching workflows.</p>
+            
+            <div class="sim-controls-grid" role="group" aria-label="Simulator anomaly triggers">
+              <button class="btn btn-outline sim-btn" onclick="triggerSimScenario('surge')" tabindex="0" aria-label="Simulate Gate B entry surge anomaly">
+                <i data-lucide="users" aria-hidden="true"></i>
+                <span>Simulate Gate Surge</span>
+              </button>
+              <button class="btn btn-outline sim-btn" onclick="triggerSimScenario('transit')" tabindex="0" aria-label="Simulate Train delay transit link anomaly">
+                <i data-lucide="train" aria-hidden="true"></i>
+                <span>Simulate Train Delay</span>
+              </button>
+              <button class="btn btn-outline sim-btn" onclick="triggerSimScenario('weather')" tabindex="0" aria-label="Simulate Severe storm warning weather anomaly">
+                <i data-lucide="cloud-lightning" aria-hidden="true"></i>
+                <span>Simulate Severe Storm</span>
+              </button>
+              <button class="btn btn-danger sim-btn" onclick="triggerSimScenario('reset')" tabindex="0" aria-label="Reset simulation to default state">
+                <i data-lucide="refresh-cw" aria-hidden="true"></i>
+                <span>Reset Simulation</span>
+              </button>
+            </div>
+            
+            <div class="sim-status-box" tabindex="0" aria-label="Active Simulation status information">
+              <strong>Active Scenario:</strong>
+              <span id="current-sim-scenario" class="text-green">Normal Stadium Operations</span>
+              <p class="neutral-text" id="current-sim-desc">The simulation is running on nominal settings. Click any scenario button above to trigger anomalies.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 7: Operations AI Dispatcher -->
+      <section id="ops-dispatcher" class="tab-panel" role="tabpanel" id="ops-dispatcher-panel" aria-labelledby="tab-ops-dispatcher">
+        <div class="grid-layout">
+          <!-- Text input for dispatcher -->
+          <div class="card glass-card span-6">
+            <h3>GenAI Dispatch & Action Generator</h3>
+            <p>Enter a quick raw incident description or incident notes. The GenAI will analyze the request, categorize it, assess severity, and generate structured volunteer checklists.</p>
+            
+            <div class="dispatch-form">
+              <div class="form-group">
+                <label for="dispatcher-raw-text">Raw Incident Notes / Radio Call Transcription:</label>
+                <textarea id="dispatcher-raw-text" class="form-control" rows="8" placeholder="e.g. A fan in Section 112 is experiencing sensory overload and needs a sensory pack. Gate C has a trash receptacle overflowing causing a minor slip risk with cups on the floor. Volunteer needed." tabindex="0"></textarea>
+              </div>
+              
+              <div class="dispatch-quick-templates">
+                <strong>Quick Notes Templates:</strong>
+                <div class="template-chips" role="group" aria-label="Apply quick templates">
+                  <button class="btn btn-outline btn-xs" onclick="applyDispatchTemplate('sensory')" tabindex="0" aria-label="Apply Sensory Overload quick notes template">Sensory Overload Sec 112</button>
+                  <button class="btn btn-outline btn-xs" onclick="applyDispatchTemplate('spill')" tabindex="0" aria-label="Apply Spill Gate B quick notes template">Spill Gate B Entrance</button>
+                  <button class="btn btn-outline btn-xs" onclick="applyDispatchTemplate('lost-kid')" tabindex="0" aria-label="Apply Lost child quick notes template">Lost Child Near Concourse B</button>
+                </div>
+              </div>
+
+              <button class="btn btn-primary btn-full" onclick="generateAIDispatch()" tabindex="0" aria-label="Run Generative AI parsing on incident notes">
+                <i data-lucide="sparkles" aria-hidden="true"></i>
+                <span>Process with Generative AI</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Generated ticket results -->
+          <div class="card glass-card span-6 dispatch-result-card">
+            <h3>AI Dispatch Ticket Card</h3>
+            <div id="dispatch-card-empty" class="dispatch-card-placeholder" tabindex="0" aria-label="AI Dispatcher results container placeholder. Waiting for incident input.">
+              <i data-lucide="clipboard-list" aria-hidden="true"></i>
+              <span>Enter raw incident notes and process to generate dispatch recommendations.</span>
+            </div>
+            
+            <!-- Real generated card structure (initially hidden) -->
+            <div id="dispatch-card-result" class="dispatch-card hidden" role="region" aria-live="polite">
+              <div class="dispatch-card-header">
+                <span class="severity-badge" id="disp-severity">HIGH</span>
+                <span class="ticket-id" id="disp-ticket-id">#T-9842</span>
+              </div>
+              <h4 id="disp-title">Sensory Overload Emergency Response</h4>
+              
+              <div class="dispatch-grid-details">
+                <div>
+                  <span class="label">LOCATION</span>
+                  <strong id="disp-location">Section 112, Row 4</strong>
+                </div>
+                <div>
+                  <span class="label">ASSIGNED GROUP</span>
+                  <strong id="disp-group">Accessibility Volunteer</strong>
+                </div>
+              </div>
+
+              <div class="dispatch-ai-section">
+                <h5><i data-lucide="sparkles" aria-hidden="true"></i> AI Summary Analysis:</h5>
+                <p id="disp-summary">Fan is experiencing severe sensory discomfort. Immediate intervention requested.</p>
+              </div>
+
+              <div class="dispatch-checklist-section">
+                <h5>Recommended Operational Response:</h5>
+                <ul class="checklist-items" id="disp-checklist" aria-label="AI checklist checklist items">
+                  <li><input type="checkbox" checked disabled> Retrieve sensory noise-cancelling headphones and sensory kit.</li>
+                  <li><input type="checkbox" checked disabled> Dispatch nearest accessibility crew to Section 112.</li>
+                  <li><input type="checkbox" checked disabled> If necessary, escort fan to Sensory Room 210.</li>
+                </ul>
+              </div>
+
+              <button class="btn btn-success btn-full" onclick="dispatchVolunteerAction()" tabindex="0" aria-label="Confirm volunteer dispatch request">
+                <i data-lucide="check" aria-hidden="true"></i>
+                <span>Dispatch Assigned Volunteer Group</span>
+              </button>
+              
+              <div id="dispatcher-sent-banner" class="success-banner hidden" role="region" aria-live="polite">
+                <i data-lucide="check-circle-2" aria-hidden="true"></i>
+                <span>Volunteer group dispatched successfully! Notification sent to live terminal.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab 8: Operations Analytics -->
+      <section id="ops-analytics" class="tab-panel" role="tabpanel" id="ops-analytics-panel" aria-labelledby="tab-ops-analytics">
+        <div class="grid-layout">
+          <!-- Occupancy Chart -->
+          <div class="card glass-card span-6 chart-container-box" tabindex="0" aria-label="Stadium occupancy over time analytics chart">
+            <h3>Stadium Capacity Over Time</h3>
+            <div class="chart-canvas-wrapper">
+              <canvas id="occupancyChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Queue Times Chart -->
+          <div class="card glass-card span-6 chart-container-box" tabindex="0" aria-label="Gate wait times minutes analytics chart">
+            <h3>Gate Waiting Times (Minutes)</h3>
+            <div class="chart-canvas-wrapper">
+              <canvas id="queueTimesChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Flow analysis details -->
+          <div class="card glass-card span-12">
+            <h3>Operations Crowdflow Insight</h3>
+            <div class="flow-insights-grid">
+              <div class="insight-column">
+                <h4>Gate Wait Time Metrics</h4>
+                <table class="ops-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Gate</th>
+                      <th scope="col">Location</th>
+                      <th scope="col">Wait Time</th>
+                      <th scope="col">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Gate A</td>
+                      <td>North Plaza</td>
+                      <td id="table-gate-a-time">4 mins</td>
+                      <td><span class="status-badge green">Low Wait</span></td>
+                    </tr>
+                    <tr>
+                      <td>Gate B</td>
+                      <td>East Plaza</td>
+                      <td id="table-gate-b-time">18 mins</td>
+                      <td><span class="status-badge red" id="table-gate-b-status">High Wait</span></td>
+                    </tr>
+                    <tr>
+                      <td>Gate C</td>
+                      <td>South Plaza</td>
+                      <td id="table-gate-c-time">3 mins</td>
+                      <td><span class="status-badge green">Low Wait</span></td>
+                    </tr>
+                    <tr>
+                      <td>Gate D</td>
+                      <td>West Plaza</td>
+                      <td id="table-gate-d-time">6 mins</td>
+                      <td><span class="status-badge yellow" id="table-gate-d-status">Moderate</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="insight-column flex-1">
+                <h4>AI Crowdflow Optimization Strategy</h4>
+                <div class="ai-strategy-card" tabindex="0" aria-label="AI Routing Recommendation">
+                  <div class="strategy-header">
+                    <i data-lucide="sparkles" aria-hidden="true"></i>
+                    <strong>Automated Routing Recommendation</strong>
+                  </div>
+                  <p id="ai-routing-rec">Due to the bottleneck at Gate B, the AI recommends adjusting the external digital signage at the train exit to reroute 40% of incoming fans to Gate A. Notifications have been dispatched to parking monitors.</p>
+                  <button class="btn btn-xs btn-primary" onclick="simulateGateReroute()" tabindex="0" aria-label="Approve automated signage reroute adjustment">Approve Signage Reroute</button>
+                  <span id="reroute-success-label" class="success-label hidden" role="region" aria-live="polite"><i data-lucide="check" aria-hidden="true"></i> Signage updated!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- JavaScript Application -->
+  <script src="app.js"></script>
+</body>
+</html>
