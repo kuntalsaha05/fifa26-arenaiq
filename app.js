@@ -13,7 +13,8 @@ let appState = {
   chartsInitialized: false,
   charts: {
     occupancy: null,
-    queue: null
+    queue: null,
+    yamalRadar: null
   }
 };
 
@@ -641,6 +642,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize Operations Charts
   initOperationsCharts();
+  
+  // Initialize Lamine Yamal Radar Chart
+  initYamalRadarChart();
 });
 
 // Update Live Clock in top bar
@@ -736,6 +740,11 @@ function switchTab(tabId) {
     setTimeout(() => {
       if (appState.charts.occupancy) appState.charts.occupancy.resize();
       if (appState.charts.queue) appState.charts.queue.resize();
+    }, 50);
+  } else if (tabId === 'fan-dashboard') {
+    // Redraw/Resize Lamine Yamal radar chart
+    setTimeout(() => {
+      if (appState.charts.yamalRadar) appState.charts.yamalRadar.resize();
     }, 50);
   }
 }
@@ -1595,3 +1604,49 @@ function updateChartsData(occupancyData, queueData) {
     document.getElementById("reroute-success-label").classList.add("hidden");
   }
 }
+
+// Initialize the Lamine Yamal radar stats chart
+function initYamalRadarChart() {
+  const ctx = document.getElementById('yamalRadarChart');
+  if (!ctx) return;
+
+  if (appState.charts.yamalRadar) {
+    appState.charts.yamalRadar.destroy();
+  }
+
+  appState.charts.yamalRadar = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['PAC', 'SHO', 'PAS', 'DRI', 'DEF', 'PHY'],
+      datasets: [{
+        label: 'Lamine Yamal Stats',
+        data: [95, 87, 91, 92, 54, 72],
+        backgroundColor: 'rgba(236, 72, 153, 0.22)',
+        borderColor: '#ec4899',
+        borderWidth: 2,
+        pointBackgroundColor: '#ec4899',
+        pointBorderColor: '#ffffff',
+        pointHoverBackgroundColor: '#ffffff',
+        pointHoverBorderColor: '#ec4899'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        r: {
+          angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+          grid: { color: 'rgba(255, 255, 255, 0.08)' },
+          pointLabels: { color: '#94a3b8', font: { size: 10, weight: 'bold' } },
+          ticks: { display: false },
+          min: 0,
+          max: 100
+        }
+      }
+    }
+  });
+}
+

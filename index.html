@@ -9,7 +9,7 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="index.css">
@@ -157,13 +157,13 @@
       <!-- Tab 1: Fan Dashboard -->
       <section id="fan-dashboard" class="tab-panel active" role="tabpanel" id="fan-dashboard-panel" aria-labelledby="tab-fan-dashboard">
         <div class="grid-layout">
-          <!-- Hero Match Card -->
+          <!-- Hero Match Card (Screenshot Style) -->
           <div class="card glass-card span-8 match-hero" tabindex="0" aria-label="Argentina vs Spain Final at MetLife Stadium">
             <div class="hero-bg-overlay"></div>
             <div class="hero-content">
-              <span class="match-status" id="hero-match-status">WORLD CUP FINAL • CHAMPIONSHIP MATCH</span>
-              <h2>🇦🇷 Argentina vs Spain 🇪🇸</h2>
-              <p id="hero-stadium-desc">MetLife Stadium • East Rutherford, New Jersey</p>
+              <span class="match-status" id="hero-match-status">🏆 WORLD CUP FINAL • CHAMPIONSHIP MATCH</span>
+              <h2 class="hero-title">FOR THE GAME.<br>FOR THE WORLD.</h2>
+              <p class="hero-subtitle">🇦🇷 Argentina vs Spain 🇪🇸 • MetLife Stadium, NJ</p>
               <div class="hero-stats">
                 <div class="stat-pill"><i data-lucide="calendar" aria-hidden="true"></i><span>July 19, 2026</span></div>
                 <div class="stat-pill"><i data-lucide="thermometer" aria-hidden="true"></i><span>78°F (Sunny)</span></div>
@@ -222,26 +222,76 @@
             </div>
           </div>
 
-          <!-- Feature Cards Grid (4 columns each) -->
-          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Multilingual AI Assistant block">
-            <div class="icon-circle"><i data-lucide="message-square-code" class="accent-color" aria-hidden="true"></i></div>
-            <h3 id="card-ai-title">Multilingual AI Assistant</h3>
-            <p id="card-ai-desc">Ask our GenAI chatbot about food options, rules, transit, or security. Speaks 5+ languages.</p>
-            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-assistant')" id="btn-ai-chat" aria-label="Open AI chatbot assistant">Chat Now</button>
+          <!-- Spotlight & Radar Grid Components (From Screenshot Reference) -->
+          <!-- Player Spotlight Card (Ronaldo/Yamal style) -->
+          <div class="card glass-card span-4 spotlight-card" tabindex="0" aria-label="Spain Player Spotlight: Lamine Yamal. Rating 8.9. Goals: 8, Assists: 6, Age: 17.">
+            <div class="spotlight-bg-glow"></div>
+            <div class="spotlight-header">
+              <span class="spotlight-tag">PLAYER OF THE WEEK</span>
+              <span class="spotlight-rating">8.9</span>
+            </div>
+            <div class="spotlight-body">
+              <h3 class="player-name">YAMAL</h3>
+              <span class="player-team">SPAIN • FC BARCELONA</span>
+              <div class="spotlight-metrics-grid">
+                <div class="metric-box">
+                  <span class="val">8</span>
+                  <span class="lbl">GOALS</span>
+                </div>
+                <div class="metric-box">
+                  <span class="val">6</span>
+                  <span class="lbl">ASSISTS</span>
+                </div>
+                <div class="metric-box">
+                  <span class="val">17</span>
+                  <span class="lbl">AGE</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Interactive Stadium Map block">
-            <div class="icon-circle"><i data-lucide="map" class="green-color" aria-hidden="true"></i></div>
-            <h3 id="card-map-title">Interactive Stadium Map</h3>
-            <p id="card-map-desc">See live queue times for restrooms and food. Navigate directly to Section 114A.</p>
-            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-map')" id="btn-map-open" aria-label="Open Stadium navigation map">Open Map</button>
+          <!-- Lamine's Performance Radar Card -->
+          <div class="card glass-card span-4 radar-card" tabindex="0" aria-label="Lamine Yamal Performance Radar stats. Pace 95, Dribbling 92, Passing 91, Shooting 87, Physical 72, Defense 54.">
+            <h3 class="card-title">LAMINE'S STATS</h3>
+            <div class="radar-canvas-wrapper">
+              <canvas id="yamalRadarChart"></canvas>
+            </div>
           </div>
 
-          <div class="card glass-card span-4 feature-cta" tabindex="0" aria-label="Eco-Friendly Transit block">
-            <div class="icon-circle"><i data-lucide="leaf" class="gold-color" aria-hidden="true"></i></div>
-            <h3 id="card-transit-title">Eco-Friendly Transit</h3>
-            <p id="card-transit-desc">Plan carbon-neutral transportation, log your ride, and earn exclusive World Cup digital tokens.</p>
-            <button class="btn btn-primary btn-sm" onclick="switchTab('fan-transit')" id="btn-transit-plan" aria-label="Open green transit planner">Plan Route</button>
+          <!-- Live Match Center Timeline Card -->
+          <div class="card glass-card span-4 timeline-card" tabindex="0" aria-label="Live Match Center Event Timeline. Current score Argentina 2, Spain 1.">
+            <div class="timeline-header">
+              <h3 class="card-title">LIVE MATCH CENTER</h3>
+              <span class="live-timeline-badge"><span class="live-pulse"></span>LIVE 24:30</span>
+            </div>
+            <div class="timeline-score-board">
+              <div class="team-score">
+                <span>🇦🇷 ARG</span>
+                <strong class="score-val" id="score-arg">2</strong>
+              </div>
+              <span class="score-divider">:</span>
+              <div class="team-score">
+                <strong class="score-val" id="score-esp">1</strong>
+                <span>ESP 🇪🇸</span>
+              </div>
+            </div>
+            <div class="timeline-events-list" id="match-timeline-events">
+              <div class="timeline-event">
+                <span class="time">18'</span>
+                <i data-lucide="circle-dot" class="icon-goal" aria-hidden="true"></i>
+                <span class="event-desc">L. MARTINEZ (ARG)</span>
+              </div>
+              <div class="timeline-event">
+                <span class="time">22'</span>
+                <i data-lucide="circle-dot" class="icon-goal" aria-hidden="true"></i>
+                <span class="event-desc">A. DI MARIA (ARG)</span>
+              </div>
+              <div class="timeline-event">
+                <span class="time">24'</span>
+                <i data-lucide="circle-dot" class="icon-goal-spain" aria-hidden="true"></i>
+                <span class="event-desc">L. YAMAL (ESP)</span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
