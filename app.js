@@ -1192,8 +1192,8 @@ function addIncidentToOpsHQ(seat, description) {
     </div>
   `;
   
-  incidentCard.querySelector(".btn-resolve").onclick = () => resolveIncident(newIncId);
-  incidentCard.querySelector(".btn-dispatch").onclick = () => dispatchDirect(`Accessibility need Seat ${seat}: ${description}`);
+  incidentCard.querySelector(".btn-resolve").addEventListener("click", () => resolveIncident(newIncId));
+  incidentCard.querySelector(".btn-dispatch").addEventListener("click", () => dispatchDirect(`Accessibility need Seat ${seat}: ${description}`));
   
   opsLog.insertBefore(incidentCard, opsLog.firstChild);
   
@@ -1338,8 +1338,8 @@ function addSimulatedIncident(id, severity, text) {
     </div>
   `;
   
-  card.querySelector(".btn-resolve").onclick = () => resolveIncident(id);
-  card.querySelector(".btn-dispatch").onclick = () => dispatchDirect(text);
+  card.querySelector(".btn-resolve").addEventListener("click", () => resolveIncident(id));
+  card.querySelector(".btn-dispatch").addEventListener("click", () => dispatchDirect(text));
   
   opsLog.insertBefore(card, opsLog.firstChild);
   appState.incidentCount++;
