@@ -852,12 +852,19 @@ function appendChatBubble(text, className) {
   const now = new Date();
   const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
   
-  messageCard.innerHTML = `
-    <div class="message-bubble">
-      <p>${text}</p>
-    </div>
-    <span class="message-time">${timeStr}</span>
-  `;
+  const bubble = document.createElement("div");
+  bubble.className = "message-bubble";
+  
+  const p = document.createElement("p");
+  p.textContent = text;
+  
+  const span = document.createElement("span");
+  span.className = "message-time";
+  span.textContent = timeStr;
+  
+  bubble.appendChild(p);
+  messageCard.appendChild(bubble);
+  messageCard.appendChild(span);
   
   chatBox.appendChild(messageCard);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -1121,11 +1128,13 @@ function bookSensoryRoom() {
   conf.classList.remove("hidden");
   
   const code = appState.bookingCounter++;
+  const cleanGuests = escapeHTML(guests);
+  const cleanTimeText = escapeHTML(timeText);
   conf.innerHTML = `
     <strong>Booking Confirmed!</strong><br>
     Reservation Code: <strong>#SR-${code}</strong><br>
-    Time Slot: ${timeText}<br>
-    Guests: ${guests} fan(s)<br>
+    Time Slot: ${cleanTimeText}<br>
+    Guests: ${cleanGuests} fan(s)<br>
     <em>Location: MetLife Plaza Level Room 210. Present this screen at door entry.</em>
   `;
 }
@@ -1178,10 +1187,13 @@ function addIncidentToOpsHQ(seat, description) {
     <h4>Accessibility Request - Seat ${cleanSeat}</h4>
     <p>${cleanDesc}</p>
     <div class="inc-actions">
-      <button class="btn btn-sm btn-primary" onclick="resolveIncident('${newIncId}')">Mark Resolved</button>
-      <button class="btn btn-sm btn-outline" onclick="dispatchDirect('Accessibility need Seat ${cleanSeat}: ${cleanDesc}')">Generate AI Dispatch</button>
+      <button class="btn btn-sm btn-primary btn-resolve">Mark Resolved</button>
+      <button class="btn btn-sm btn-outline btn-dispatch">Generate AI Dispatch</button>
     </div>
   `;
+  
+  incidentCard.querySelector(".btn-resolve").onclick = () => resolveIncident(newIncId);
+  incidentCard.querySelector(".btn-dispatch").onclick = () => dispatchDirect(`Accessibility need Seat ${seat}: ${description}`);
   
   opsLog.insertBefore(incidentCard, opsLog.firstChild);
   
@@ -1321,10 +1333,14 @@ function addSimulatedIncident(id, severity, text) {
     <h4>Simulated Event Incident</h4>
     <p>${cleanText}</p>
     <div class="inc-actions">
-      <button class="btn btn-sm btn-primary" onclick="resolveIncident('${id}')">Mark Resolved</button>
-      <button class="btn btn-sm btn-outline" onclick="dispatchDirect('${cleanText}')">Generate AI Dispatch</button>
+      <button class="btn btn-sm btn-primary btn-resolve">Mark Resolved</button>
+      <button class="btn btn-sm btn-outline btn-dispatch">Generate AI Dispatch</button>
     </div>
   `;
+  
+  card.querySelector(".btn-resolve").onclick = () => resolveIncident(id);
+  card.querySelector(".btn-dispatch").onclick = () => dispatchDirect(text);
+  
   opsLog.insertBefore(card, opsLog.firstChild);
   appState.incidentCount++;
   document.getElementById("incident-count-badge").innerText = `${appState.incidentCount} Active`;
@@ -1456,10 +1472,19 @@ function generateAIDispatch() {
   document.getElementById("disp-summary").innerText = summary;
   
   const listEl = document.getElementById("disp-checklist");
-  listEl.innerHTML = "";
+  listEl.textContent = "";
+  const fragment = document.createDocumentFragment();
   checklist.forEach(step => {
-    listEl.innerHTML += `<li><input type="checkbox"> <span>${step}</span></li>`;
+    const li = document.createElement("li");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    const span = document.createElement("span");
+    span.textContent = step;
+    li.appendChild(input);
+    li.appendChild(span);
+    fragment.appendChild(li);
   });
+  listEl.appendChild(fragment);
   
   // Scroll to results
   cardResult.scrollIntoView({ behavior: 'smooth' });

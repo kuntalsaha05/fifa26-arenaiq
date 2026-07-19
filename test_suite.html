@@ -131,6 +131,8 @@
     <div id="chat-messages-box"></div>
     <input id="chat-input-field">
     <div id="eco-points-label"></div>
+    
+    <!-- Eco Rewards elements -->
     <div id="reward-1"></div>
     <div id="reward-2"></div>
     <div id="reward-1-diff"></div>
@@ -140,20 +142,62 @@
     <div id="lbl-reward-req-1-diff"></div>
     <div id="lbl-reward-req-2-diff"></div>
     <div id="user-eco-level"></div>
+
+    <!-- Booking confirmation -->
     <div id="booking-confirmation"></div>
-    <div id="volunteer-request-status"></div>
-    <div id="vol-status-text"></div>
-    <div id="vol-status-desc"></div>
+    <select id="sensory-time"><option value="1">19:00 - 19:30</option></select>
+    <input id="sensory-guests" value="2">
+    
+    <!-- Help / Incidents elements -->
+    <input id="help-seat" value="Sec 114, Row D, Seat 8">
+    <textarea id="help-description">Need elevator gate assistance</textarea>
     <div id="ops-incident-feed"></div>
     <div id="incident-count-badge"></div>
     <div id="ops-incidents-val"></div>
+    <span id="volunteer-request-status"></span>
+    <span id="vol-status-text"></span>
+    <span id="vol-status-desc"></span>
+    
+    <!-- Dispatcher elements -->
+    <textarea id="dispatcher-raw-text"></textarea>
+    <div id="dispatcher-sent-banner"></div>
+    <div id="disp-title"></div>
+    <div id="disp-severity"></div>
+    <div id="disp-location"></div>
+    <div id="disp-group"></div>
+    <div id="disp-summary"></div>
+    <ul id="disp-checklist"></ul>
+
+    <!-- AI alert banner -->
     <div id="ai-alert-banner"></div>
     <div id="alert-title"></div>
     <div id="alert-desc"></div>
+
+    <!-- Simulation widgets -->
     <div id="current-sim-scenario"></div>
     <div id="current-sim-desc"></div>
     <div id="ops-attendance-val"></div>
     <div id="ops-avg-queue-val"></div>
+    
+    <!-- Map stubs -->
+    <div id="zone-A"></div>
+    <div id="zone-B"></div>
+    <div id="gate-a"></div>
+    <div id="gate-b"></div>
+    <div id="map-target-title"></div>
+    <div id="map-target-details"></div>
+
+    <!-- Carbon offsets -->
+    <div id="mode-train"></div>
+    <div id="mode-shuttle"></div>
+    <div id="mode-car"></div>
+    <button id="btn-log-ride-text"></button>
+
+    <!-- Score tickers -->
+    <span id="score-arg"></span>
+    <span id="score-esp"></span>
+
+    <!-- Charts canvases -->
     <canvas id="occupancyChart"></canvas>
     <canvas id="queueTimesChart"></canvas>
     <canvas id="yamalRadarChart"></canvas>
@@ -237,93 +281,123 @@
       passCount = 0;
       failCount = 0;
 
-      // 1. Validate XSS Sanitizer Function
+      // Stub window alerts to prevent automated scan blocker hangs!
+      const originalAlert = window.alert;
+      window.alert = () => {};
+
+      // ==================== 1. XSS SANITIZER TESTS ====================
       try {
-        assertEquals(
-          "SEC-01",
-          "Security Sanitizer",
-          "escapeHTML converts '<' brackets to safe HTML entity",
-          "&lt;script&gt;",
-          escapeHTML("<script>")
-        );
-        assertEquals(
-          "SEC-02",
-          "Security Sanitizer",
-          "escapeHTML converts '&' character to safe HTML entity",
-          "soda &amp; juice",
-          escapeHTML("soda & juice")
-        );
-        assertEquals(
-          "SEC-03",
-          "Security Sanitizer",
-          "escapeHTML converts double quotes to safe entity",
-          "&quot;USA&quot;",
-          escapeHTML('"USA"')
-        );
+        assertEquals("SEC-01", "Sanitizer", "escapeHTML escapes less-than brackets", "&lt;script&gt;", escapeHTML("<script>"));
+        assertEquals("SEC-02", "Sanitizer", "escapeHTML escapes ampersands", "soda &amp; juice", escapeHTML("soda & juice"));
+        assertEquals("SEC-03", "Sanitizer", "escapeHTML escapes double quotes", "&quot;USA&quot;", escapeHTML('"USA"'));
+        assertEquals("SEC-04", "Sanitizer", "escapeHTML escapes single quotes", "Lamine&#039;s Stats", escapeHTML("Lamine's Stats"));
+        assertEquals("SEC-05", "Sanitizer", "escapeHTML handles non-string gracefully", "", escapeHTML(12345));
       } catch (err) {
-        assertEquals("SEC-ERR", "Security Sanitizer", "Exception occurred: " + err.message, true, false);
+        assertEquals("SEC-ERR", "Sanitizer", "Exception: " + err.message, true, false);
       }
 
-      // 2. Validate GenAI Keyword Chat Routing Rules
+      // ==================== 2. MULTILINGUAL AI BOT ROUTINGS ====================
       try {
-        // Switch language to english
         appState.language = 'en';
-        
-        assertEquals(
-          "AI-01",
-          "GenAI Chat Matching",
-          "Keywords matching 'train' retrieves rail schedules",
-          chatMockResponses['en'].train,
-          getMockAIResponse("How to go there by train?")
-        );
-        assertEquals(
-          "AI-02",
-          "GenAI Chat Matching",
-          "Keywords matching 'vegan' retrieves food stand list",
-          chatMockResponses['en'].vegan,
-          getMockAIResponse("Vegan food concession locations?")
-        );
-        assertEquals(
-          "AI-03",
-          "GenAI Chat Matching",
-          "Unmatched queries retrieve fallback default help response",
-          chatMockResponses['en'].default,
-          getMockAIResponse("Tell me a random story about final matches")
-        );
+        assertEquals("AI-01", "AI Bot EN", "Matches transit queries", chatMockResponses['en'].train, getMockAIResponse("train transit directions"));
+        assertEquals("AI-02", "AI Bot EN", "Matches vegan queries", chatMockResponses['en'].vegan, getMockAIResponse("any vegan concessions?"));
+        assertEquals("AI-03", "AI Bot EN", "Matches sensory queries", chatMockResponses['en'].sensory, getMockAIResponse("sensory room location"));
+        assertEquals("AI-04", "AI Bot EN", "Matches prohibited queries", chatMockResponses['en'].prohibited, getMockAIResponse("Are big bags banned?"));
+        assertEquals("AI-05", "AI Bot EN", "Fallback matches default", chatMockResponses['en'].default, getMockAIResponse("unsupported statement here"));
+
+        appState.language = 'es';
+        assertEquals("AI-ES-01", "AI Bot ES", "Matches spanish vegan concessions", chatMockResponses['es'].vegan, getMockAIResponse("Comida vegano"));
+        assertEquals("AI-ES-02", "AI Bot ES", "Matches spanish default fallback", chatMockResponses['es'].default, getMockAIResponse("hola"));
+
+        appState.language = 'fr';
+        assertEquals("AI-FR-01", "AI Bot FR", "Matches French quiet room", chatMockResponses['fr'].sensory, getMockAIResponse("salle quiet"));
+
+        appState.language = 'ar';
+        assertEquals("AI-AR-01", "AI Bot AR", "Matches Arabic transit", chatMockResponses['ar'].train, getMockAIResponse("قطار"));
       } catch (err) {
-        assertEquals("AI-ERR", "GenAI Chat Matching", "Exception occurred: " + err.message, true, false);
+        assertEquals("AI-ERR", "AI Bot", "Exception: " + err.message, true, false);
       }
 
-      // 3. Validate Sustainability / Eco points logic
+      // ==================== 3. CARBON GREEN TRANSIT MATHS ====================
       try {
-        // Reset state points
         appState.ecoPoints = 0;
-        
-        // Log train (mode active)
         appState.selectedTransit = 'train';
         logSustainableChoice();
-        assertEquals(
-          "ECO-01",
-          "Sustainability Math",
-          "Train travel awards +40 Eco points",
-          40,
-          appState.ecoPoints
-        );
+        assertEquals("ECO-01", "Transit Reward", "Train travel awards +40 Eco points", 40, appState.ecoPoints);
 
         appState.selectedTransit = 'shuttle';
         logSustainableChoice();
-        assertEquals(
-          "ECO-02",
-          "Sustainability Math",
-          "Additional shuttle travel adds +20 points (Total: 60)",
-          60,
-          appState.ecoPoints
-        );
+        assertEquals("ECO-02", "Transit Reward", "Shuttle awards +20 Eco points (Total: 60)", 60, appState.ecoPoints);
+
+        // Verification of levels achievements unlocking
+        const levelLabel = document.getElementById("user-eco-level").innerText;
+        assertEquals("ECO-03", "Eco Achievements", "Unlocks reward milestone levels at 50+ points", "REWARD UNLOCKED!", document.getElementById("lbl-reward-req-1").innerText);
       } catch (err) {
-        assertEquals("ECO-ERR", "Sustainability Math", "Exception: " + err.message, true, false);
+        assertEquals("ECO-ERR", "Transit Reward", "Exception: " + err.message, true, false);
       }
 
-      // 4. Validate Multilingual Translations Dictionaries Coverage
+      // ==================== 4. APP ROLE & CHANNELS STATE CONTROLS ====================
+      try {
+        // Toggle Operations HQ role
+        switchRole('ops');
+        assertEquals("ROLE-01", "Role Management", "Role switched to operations HQ", 'ops', appState.role);
+        assertEquals("ROLE-02", "Role Management", "Operations menu visible", false, document.getElementById("nav-ops").classList.contains("hidden"));
+
+        // Toggle back to Fan Role
+        switchRole('fan');
+        assertEquals("ROLE-03", "Role Management", "Role switched back to fan companion", 'fan', appState.role);
+        assertEquals("ROLE-04", "Role Management", "Operations menu hidden", true, document.getElementById("nav-ops").classList.contains("hidden"));
+
+        // Switch channel tab within Fan Companion
+        switchTab('fan-transit');
+        assertEquals("TAB-01", "Tab Navigation", "Active tab updated to fan-transit", 'fan-transit', appState.currentTab);
+      } catch (err) {
+        assertEquals("ROLE-ERR", "Role System", "Exception: " + err.message, true, false);
+      }
+
+      // ==================== 5. INTERACTIVE MAP DATA GATES ====================
+      try {
+        // Mock selecting high wait Zone B on map
+        selectMapZone('Zone B');
+        assertEquals("MAP-01", "Map Interface", "Zone B wait details mapped", "Zone B Details", document.getElementById("map-target-title").innerText);
+        assertEquals("MAP-02", "Map Interface", "Zone B high occupancy mapped", "92%", document.getElementById("map-target-details").querySelector("strong:nth-child(2)").innerText);
+
+        // Mock selecting Gate B access point
+        selectMapGate('Gate B');
+        assertEquals("MAP-03", "Map Interface", "Gate B wait time mapped", "18 mins wait", document.getElementById("map-target-details").querySelector("strong").innerText);
+      } catch (err) {
+        assertEquals("MAP-ERR", "Map Interface", "Exception: " + err.message, true, false);
+      }
+
+      // ==================== 6. SEAT BOOKINGS VALIDATIONS ====================
+      try {
+        appState.bookingCounter = 1000;
+        bookSensoryRoom();
+        assertEquals("BOOK-01", "Reservations", "Sensory slot code reservation generated", "#SR-1000", document.getElementById("booking-confirmation").querySelector("strong:nth-child(2)").innerText);
+        assertEquals("BOOK-02", "Reservations", "Reservations slot counters auto-incremented", 1001, appState.bookingCounter);
+      } catch (err) {
+        assertEquals("BOOK-ERR", "Reservations", "Exception: " + err.message, true, false);
+      }
+
+      // ==================== 7. EMERGENCY VOLUNTEERS TIMELINE LOGS ====================
+      try {
+        appState.incidentCount = 0;
+        addIncidentToOpsHQ("Sec 114, Row F", "Requires wheelchair escort");
+        assertEquals("INC-01", "Staff Incidents", "Incident count increased to 1", 1, appState.incidentCount);
+        
+        const incidentList = document.getElementById("ops-incident-feed");
+        assertEquals("INC-02", "Staff Incidents", "Incident card inserted dynamically", 1, incidentList.children.length);
+
+        // Resolve Incident
+        const cardId = incidentList.children[0].id;
+        resolveIncident(cardId);
+        assertEquals("INC-03", "Staff Incidents", "Incident card removed upon resolution", 0, incidentList.children.length);
+        assertEquals("INC-04", "Staff Incidents", "Incident count decremented to 0", 0, appState.incidentCount);
+      } catch (err) {
+        assertEquals("INC-ERR", "Staff Incidents", "Exception: " + err.message, true, false);
+      }
+
+      // ==================== 8. DICTIONARIES INTEGRITY AND COVERAGE ====================
       try {
         const langKeysEN = Object.keys(translations.en).sort();
         const langKeysES = Object.keys(translations.es).sort();
@@ -331,30 +405,16 @@
         const langKeysPT = Object.keys(translations.pt).sort();
         const langKeysAR = Object.keys(translations.ar).sort();
 
-        assertEquals(
-          "LANG-01",
-          "Localization Dictionaries",
-          "Spanish dictionary contains same keys count as English",
-          langKeysEN.length,
-          langKeysES.length
-        );
-        assertEquals(
-          "LANG-02",
-          "Localization Dictionaries",
-          "French dictionary contains same keys count as English",
-          langKeysEN.length,
-          langKeysFR.length
-        );
-        assertEquals(
-          "LANG-03",
-          "Localization Dictionaries",
-          "Arabic dictionary contains same keys count as English",
-          langKeysEN.length,
-          langKeysAR.length
-        );
+        assertEquals("LANG-01", "Localization Integrity", "Spanish key parity verified", langKeysEN.length, langKeysES.length);
+        assertEquals("LANG-02", "Localization Integrity", "French key parity verified", langKeysEN.length, langKeysFR.length);
+        assertEquals("LANG-03", "Localization Integrity", "Portuguese key parity verified", langKeysEN.length, langKeysPT.length);
+        assertEquals("LANG-04", "Localization Integrity", "Arabic key parity verified", langKeysEN.length, langKeysAR.length);
       } catch (err) {
-        assertEquals("LANG-ERR", "Localization Dictionaries", "Exception: " + err.message, true, false);
+        assertEquals("LANG-ERR", "Localization", "Exception: " + err.message, true, false);
       }
+
+      // Restore window alert logic
+      window.alert = originalAlert;
 
       // Update counters in DOM
       document.getElementById("total-tests").innerText = assertCount;
